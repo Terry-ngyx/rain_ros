@@ -28,52 +28,52 @@
     </collision>
   </link>
 
-  <joint name="joint_world_to_stand" type="fixed">
+  <joint name="fixed" type="fixed">
     <parent link="world"/>
     <child link="stand"/>
   </joint>  
 
-
 <!-- (1) UR5 (extracted from "ur_description/ur5_upload.launch" from "universal_robot" package-->
 
   <!-- common stuff -->
-  <xacro:include filename="$(find rain_description)/urdf/common.gazebo.xacro" />
+  <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />
 
-  <!-- (A) Bring a Robotic System -->
   <!-- ur5 -->
   <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro" />
- 
-  <!-- 3 finger robotiq gripper -->
-  <xacro:include filename="$(find robotiq_3f_gripper_visualization)/cfg/robotiq-3f-gripper_articulated_macro.xacro" />
-  <!-- (B) Link the robot models -->
-  <!-- ur5 -->
+
+  <!-- arm -->
   <xacro:ur5_robot prefix="" joint_limited="false"/>
-  <joint name="joint_stand_to_UR5" type="fixed">
+
+  <!-- <link name="world" /> -->
+
+  <joint name="stand_joint" type="fixed">
     <parent link="stand" />
     <child link = "base_link" />
-    <origin xyz="0.0 0.0 1.01" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 0.0 1.0" rpy="0.0 0.0 0.0" />
   </joint>
 
 
-  <!-- gripper spawn: linking the gripper to the arm end effector -->
-  <xacro:robotiq-3f-gripper_articulated prefix="" parent="tool0" reflect="1">
-    <origin rpy="0 ${pi/2.0 + pi/4.0} ${-pi/2.0}" xyz="0.051 0 0"/>
+<!-- (2) Robotiq 3-finger gripper (Right Hand)-->
+  <!-- gripper -->
+  <xacro:include filename="$(find robotiq_3f_gripper_visualization)/cfg/robotiq-3f-gripper_articulated_macro.xacro" />
+  <xacro:robotiq-3f-gripper_articulated prefix="" parent="ee_link" reflect="1">
+    <origin rpy="0 0 ${-pi/2.0}" xyz="0.051 0 0"/>
   </xacro:robotiq-3f-gripper_articulated>
 
   
-  <!-- plugin for RobotiQ hands -->
   <gazebo>
+    <!-- plugin for left RobotiQ hand -->
     <plugin name="left_robotiq_hand_plugin" filename="libRobotiqHandPlugin.so">
       <side>left</side>
       <kp_position>10.0</kp_position>
       <kd_position>0.5</kd_position>
     </plugin>
+    <!-- plugin for right RobotiQ hand -->
     <plugin name="right_robotiq_hand_plugin" filename="libRobotiqHandPlugin.so">
       <side>right</side>
       <kp_position>10.0</kp_position>
       <kd_position>0.5</kd_position>
     </plugin>
   </gazebo>
-
 
 </robot>
